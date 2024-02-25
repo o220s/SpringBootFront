@@ -56,11 +56,37 @@ pre{
 </tr>
 </table>
 
+<div id="app" class="container">
+
+<table>
+<col width="1500px"/><col width="170px"/>
+<tr>
+	<td>comment</td>
+</tr> 
+<tr>
+	<td>
+		<textarea rows="3" class="form-control" id="comContent"></textarea>
+	</td>
+	<td style="padding-left: 30px">
+		<button type="submit" id="comBtn" class="btn btn-primary btn-block p-4">작성완료</button>
+	</td>
+</tr>
+
+</table>
+</div>
+<br>
 <button type="button" class="btn btn-primary" id="answerBbs">답글</button>
 
 <button type="button" class="btn btn-primary" id="updateBbs">글수정</button>
 	
 <button type="button" class="btn btn-primary" id="deleteBbs">글삭제</button>
+
+<br><br>
+<table class="table table-sm">
+<col width="500"/><col width="500"/>
+
+<tbody id="comList"></tbody>
+</table>
 
 </div>
 <br/><br/><br/>
@@ -75,7 +101,8 @@ let seq = params.get("seq");
 let login = sessionStorage.getItem("login");
 let loginId = (JSON.parse(login)).id;
 
-
+// detail에 진입하면 바로 commentlist가 나오게 호출
+comment();
 
 $.ajax({
     url: "http://localhost:9900/bbsdetail",
@@ -121,6 +148,63 @@ $("#deleteBbs").click(function () {
 	});
 });
 
+$("#answerBbs").click(function () {
+	location.href = "bbsanswer.html?seq=" + seq;
+});
+
+function comment() {
+	$.ajax({
+		url:"http://localhost:9900/commentlist",
+		type:"get",
+		data:{ seq:seq },
+		success:function( list ){
+			 //alert('success');			
+			// alert(JSON.stringify(list));
+			
+			$.each(list, function (i, item) {
+				let str = "<tr class='table-info'>"
+					str += 		"<td>작성자: " + item.id + "</td>";
+					str += 		"<td>작성일: " + item.wdate + "</td>";
+					str += "</tr>";
+					str += "<tr>";
+					str += 		"<td colspan='2'>" + item.content + "</td>";			
+					str += "</tr>";
+					str += "<tr>";
+					str += 		"<td colspan='2'>&nbsp;</td>";			
+					str += "</tr>";
+					
+				$("#comList").append(str);
+			});			
+						
+		},
+		error:function(){
+			alert('error');
+		}		
+	});	
+	}
+
+$("#comBtn").click(function () {
+	$.ajax({
+		url:"http://localhost:9900/commentwrite",
+		type:"get",
+		data:{ "seq":seq,"id":loginId, "content":$("#comContent").val() },
+		success:function(msg){
+		if(msg === "YES"){
+			alert('댓글작성성공');
+			
+			//comment 갱신
+			comment();
+			$("#comment").val("");
+
+		}else{
+			alert('댓글작성실패');
+			}
+		},
+		error:function(){
+			alert('error')
+		}
+	});
+});
 
 </script>
 

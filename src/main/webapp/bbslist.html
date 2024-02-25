@@ -79,6 +79,8 @@ th.colorfy {
 <br>
 
 <a href="bbswrite.html">글쓰기</a>
+<br><br>
+<button type="button" id="pdslistBtn" class="btn btn-primary">자료실</button>
 </div>
 
 
@@ -204,6 +206,10 @@ function titleDot(title) {
 	
 	return newtitle;
 }
+
+$("#pdslistBtn").click(function () {
+	location.href = "pdslist.html";
+});
 </script>
 
 </body>
